@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+pydub
+numpy
+python-socketio[asgi]
+audioop-lts

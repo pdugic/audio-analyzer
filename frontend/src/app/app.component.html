@@ -1,0 +1,24 @@
+<div class="container">
+  <h2>Amplitude (Time Domain)</h2>
+  <canvas
+    baseChart
+    [data]="amplitudeData"
+    [options]="amplitudeOptions"
+    [type]="lineChartType"
+    #lineChart=base-chart
+  ></canvas>
+
+  <h2>Spectrum (Frequency Domain)</h2>
+  <canvas
+    baseChart
+    [data]="spectrumData"
+    [options]="spectrumOptions"
+    [type]="barChartType"
+    #barChart=base-chart
+  ></canvas>
+
+  <h2>Buttons</h2>
+  <button (click)="start()">Start</button>
+  <button (click)="stop()">Stop</button>
+
+</div>

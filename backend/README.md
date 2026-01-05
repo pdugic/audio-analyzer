@@ -3,8 +3,8 @@
 ✅ **What this repository contains**
 
 - Python backend tools that generate I/Q audio and analyze it in real-time:
-  - `iq_generator.py` — a configurable I/Q data generator and Socket.IO server (default port **8000**).
-  - `iq_filter_analyzer.py` — connects to an I/Q generator, applies filters, produces amplitude/spectrum JSON (`audio_frame`) and offers a lightweight WAV streaming endpoint (default port **8080**).
+  - `audio_iq_generator.py` — a configurable I/Q data generator and Socket.IO server (default port **8000**).
+  - `audio_filter_analyzer.py` — connects to an I/Q generator, applies filters, produces amplitude/spectrum JSON (`audio_frame`) (default port **8080**).
 
 ---
 
@@ -38,7 +38,7 @@ pip install -r requirements.txt
 
 ---
 
-## `iq_generator.py` — generator / Socket.IO server 🔊
+## `audio_iq_generator.py` — generator / Socket.IO server 🔊
 
 Purpose: produce audio segments (noise / sines / mp3 variants) and emit `iq_data_segment` Socket.IO messages.
 
@@ -55,13 +55,13 @@ Examples
 - Start server with defaults:
 
 ```bash
-python3 iq_generator.py
+python3 audio_iq_generator.py
 ```
 
 - Start server on port 9000 and do NOT auto-start streams:
 
 ```bash
-python3 iq_generator.py --port 9000 --auto-start-stream false
+python3 audio_iq_generator.py --port 9000 --auto-start-stream false
 ```
 
 - Same via environment variables:
@@ -84,7 +84,7 @@ Notes
 
 ---
 
-## `iq_filter_analyzer.py` — filter & analyzer service 📈
+## `audio_filter_analyzer.py` — filter & analyzer service 📈
 
 Purpose: connect to an I/Q generator server, apply configurable filters, compute:
 - `audio_frame` JSON containing: `sample_rate`, `time_pos`, `amplitude` (downsampled), and `spectrum` (freqs + magnitude)
@@ -101,13 +101,13 @@ Examples
 - Start analyzer and connect to default generator:
 
 ```bash
-python3 iq_filter_analyzer.py
+python3 audio_filter_analyzer.py
 ```
 
 - Use a remote generator:
 
 ```bash
-python3 iq_filter_analyzer.py --generator-url http://192.168.1.10:8000
+python3 audio_filter_analyzer.py --generator-url http://192.168.1.10:8000
 ```
 
 - Query or update filters:
@@ -130,13 +130,13 @@ Socket events
 1. Start generator:
 
 ```bash
-python3 iq_generator.py
+python3 audio_iq_generator.py
 ```
 
 2. Start filter/analyzer (connects to `http://localhost:8000` by default):
 
 ```bash
-python3 iq_filter_analyzer.py
+python3 audio_filter_analyzer.py
 ```
 
 3. Use `test_stream.py` to drive filter changes or to start/stop the generator from the CLI.

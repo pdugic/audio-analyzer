@@ -36,7 +36,9 @@ docker compose down
 
 ## Access via browser
 
-Open `http://localhost`
+Open `http://localhost` to access main application.
+
+Open `http://localhost/generator_ctl.html` to access application to start and stop generator (not meant for end users).
 
 ## Development mode ⚙️
 

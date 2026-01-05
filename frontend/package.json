@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "build:deploy": "bash build/build.sh",
+    "start:docker": "bash build/run.sh"
   },
   "prettier": {
     "printWidth": 100,
@@ -27,13 +29,14 @@
     "@angular/compiler": "^21.0.0",
     "@angular/core": "^21.0.0",
     "@angular/forms": "^21.0.0",
+    "@angular/material": "^21.0.5",
     "@angular/platform-browser": "^21.0.0",
     "@angular/router": "^21.0.0",
-    "tslib": "^2.3.0",
-    "rxjs": "^7.8.1",
     "chart.js": "^4.4.1",
     "ng2-charts": "^8.0.0",
-    "socket.io-client": "^4.7.5"
+    "rxjs": "^7.8.1",
+    "socket.io-client": "^4.7.5",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular/build": "^21.0.3",

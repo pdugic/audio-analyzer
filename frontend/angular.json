@@ -19,6 +19,8 @@
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
+              "src/assets",
+              "src/generator_ctl.html",
               {
                 "glob": "**/*",
                 "input": "public"

@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  audio-iq-generator:
+    image: pdugic/audio-iq-generator
+    build:
+      context: backend
+      dockerfile: docker/Dockerfile.audio_iq_generator
+    ports:
+      - "8000:8000"
+    environment:
+      - IQ_GENERATOR_PORT=8000
+      - IQ_GENERATOR_AUTO_START_STREAM=true
+
+  audio-filter-analyzer:
+    image: pdugic/audio-filter-analyzer
+    build:
+      context: backend
+      dockerfile: docker/Dockerfile.audio_filter_analyzer
+    ports:
+      - "8080:8080"
+    environment:
+      - IQ_GENERATOR_URL=http://audio-iq-generator:8000
+    depends_on:
+      - audio-iq-generator
+
+  audio_filter_frontend:
+    image: pdugic/audio-filter-frontend
+    build:
+      context: frontend
+      dockerfile: docker/Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - API_URL_INTERN=http://audio-filter-analyzer:8080
+      - API_GEN_URL_INTERN=http://audio-iq-generator:8000
+      - API_URL=http://localhost/filter
+      - API_GEN_URL=http://localhost/generator
+    depends_on:
+      - audio-iq-generator
+      - audio-filter-analyzer

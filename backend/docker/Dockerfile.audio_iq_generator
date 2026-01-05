@@ -1,0 +1,25 @@
+# Minimal Dockerfile for iq_generator
+FROM python:3.14-slim-bookworm
+
+# Keep Python output unbuffered
+ENV PYTHONUNBUFFERED=1
+WORKDIR /app
+
+# Install additional system libraries (ffmpeg needed by pydub)
+RUN apt-get update && apt-get install -y ffmpeg && rm -rf /var/lib/apt/lists/*
+
+# Install dependencies
+COPY ../requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy source
+COPY ../*.py .
+
+# Default envs (can be overridden at runtime)
+ENV IQ_GENERATOR_PORT=8000
+ENV IQ_GENERATOR_AUTO_START_STREAM=true
+
+EXPOSE 8000
+
+# Run the iq_generator module
+CMD ["python", "audio_iq_generator.py"]

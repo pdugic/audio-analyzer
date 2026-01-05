@@ -1,0 +1,4 @@
+{
+  "apiUrl": "${API_URL}",
+  "apiGenUrl": "${API_GEN_URL}"
+}

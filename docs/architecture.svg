@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="220" viewBox="0 0 880 220" role="img" aria-label="Architecture diagram">
+  <title>Audio Analyzer architecture</title>
+  <desc>Browser → Frontend (Nginx) → Filter Analyzer → IQ Generator chain; IQ generator streams I/Q data back to the filter analyzer.</desc>
+  <style>
+    .box { fill:#ffffff; stroke:#263238; stroke-width:2; rx:8; }
+    .label { font-family: Inter, Arial, Helvetica, sans-serif; font-size:14px; fill:#0f1720; }
+    .meta { font-family: Inter, Arial, Helvetica, sans-serif; font-size:12px; fill:#475569; }
+    .arrow { stroke:#0f1720; stroke-width:2; fill:none; marker-end:url(#arrowhead); }
+    .stream { stroke:#1f7a8c; stroke-width:2; stroke-dasharray:8 6; fill:none; marker-end:url(#arrowhead); }
+    .bg { fill:#f8fafc; }
+  </style>
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#0f1720" />
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="880" height="220" class="bg" rx="0" />
+
+  <!-- Chain of blocks: Browser -> Frontend -> Filter Analyzer -> IQ Generator -->
+  <!-- Browser -->
+  <g id="browser">
+    <rect x="40" y="60" width="140" height="80" class="box" />
+    <text x="110" y="95" text-anchor="middle" class="label">Browser</text>
+    <text x="110" y="115" text-anchor="middle" class="meta">User's browser</text>
+  </g>
+
+  <!-- Frontend -->
+  <g id="frontend">
+    <rect x="220" y="40" width="180" height="120" class="box" />
+    <text x="310" y="80" text-anchor="middle" class="label">Frontend (Nginx)</text>
+    <text x="310" y="100" text-anchor="middle" class="meta">port 80 • proxies APIs</text>
+  </g>
+
+  <!-- Filter Analyzer -->
+  <g id="filter">
+    <rect x="440" y="40" width="180" height="120" class="box" />
+    <text x="530" y="80" text-anchor="middle" class="label">Filter Analyzer</text>
+    <text x="530" y="100" text-anchor="middle" class="meta">port 8080</text>
+  </g>
+
+  <!-- IQ Generator -->
+  <g id="iq">
+    <rect x="660" y="60" width="160" height="80" class="box" />
+    <text x="740" y="95" text-anchor="middle" class="label">IQ Generator</text>
+    <text x="740" y="115" text-anchor="middle" class="meta">port 8000</text>
+  </g>
+
+  <!-- Straight arrows to form the chain -->
+  <path class="arrow" d="M180 100 L220 100" />
+  <text x="200" y="90" text-anchor="middle" class="meta">HTTP/API</text>
+
+  <path class="arrow" d="M400 100 L440 100" />
+  <text x="420" y="90" text-anchor="middle" class="meta">HTTP/API</text>
+
+  <path class="arrow" d="M620 100 L660 100" />
+  <text x="640" y="90" text-anchor="middle" class="meta">HTTP/API</text>
+
+  <!-- I/Q data stream: IQ Generator --> Filter Analyzer (curved dashed arrow)
+  <path class="stream" d="M660 120 C 600 150, 520 150, 520 120" />
+  <path class="stream" d="M520 120 L520 118" />
+  <text x="590" y="155" text-anchor="middle" class="meta" fill="#1f7a8c">I/Q data stream</text>
+
+  <!-- Filtered data stream: Filter Analyzer --> Browser (curved arrow up)
+  <path class="stream" d="M520 60 C 480 40, 220 40, 180 60" />
+  <path class="stream" d="M180 60 L180 62" />
+  <text x="340" y="30" text-anchor="middle" class="meta" fill="#1f7a8c">Filtered audio / frames</text>
+
+  <!-- Footer note -->
+  <text x="440" y="205" text-anchor="middle" class="meta">Diagram: Browser → Frontend → Filter Analyzer → IQ Generator. IQ Generator streams I/Q data back to Filter Analyzer. Filtered audio/frames flow from Filter Analyzer back to Browser (via Frontend).</text>
+
+</svg>

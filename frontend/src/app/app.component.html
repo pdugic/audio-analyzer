@@ -1,24 +1,59 @@
 <div class="container">
-  <h2>Amplitude (Time Domain)</h2>
-  <canvas
-    baseChart
-    [data]="amplitudeData"
-    [options]="amplitudeOptions"
-    [type]="lineChartType"
-    #lineChart=base-chart
-  ></canvas>
+  <div style="display: flex;">
+    <div style="margin: 10px;">
+      <h2>Amplitude (Time Domain)</h2>
+      <canvas
+        baseChart
+        [data]="amplitudeData"
+        [options]="amplitudeOptions"
+        [type]="lineChartType"
+        #amplitudeChart=base-chart
+      ></canvas>
+    </div>
+    <div style="margin: 10px;">
+      <h2>Spectrum (Frequency Domain)</h2>
+      <canvas
+        baseChart
+        [data]="spectrumData"
+        [options]="spectrumOptions"
+        [type]="lineChartType"
+        #spectrumChart=base-chart
+      ></canvas>
+    </div>
+  </div>
+  <div style=" width: 100%;">
+    <div style="margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+      <label style="margin-right: 10px;">Received samples: {{receivedSamplesThrottled$ | async}}</label>
+    </div>
+  </div>
 
-  <h2>Spectrum (Frequency Domain)</h2>
-  <canvas
-    baseChart
-    [data]="spectrumData"
-    [options]="spectrumOptions"
-    [type]="barChartType"
-    #barChart=base-chart
-  ></canvas>
+  <h2>Generator</h2>
+  <div style=" width: 100%;">
+    <div style="margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+      <label style="margin-right: 10px;">Current generator: </label>
+      <button (click)="set_generator('sines')">Multiple Sines</button>
+      <button (click)="set_generator('noise')">White Noise</button>
+    </div>
+  </div>
 
-  <h2>Buttons</h2>
-  <button (click)="start()">Start</button>
-  <button (click)="stop()">Stop</button>
+  <h2>Frequency Filter</h2>
+  <div style=" width: 100%;">
+    <div style="margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
+      <label style="margin-right: 10px;">High Cut (Hz): </label>
+      <input type="number" min="20" max="20000" step="50"
+        (change)="onHighCutChange($event)" [(ngModel)]="high_cut" />
+      <label style="margin-right: 10px; margin-left: 10px;">Low Cut (Hz): </label>
+      <input type="number" min="20" max="20000" step="50"
+        (change)="onLowCutChange($event)" [(ngModel)]="low_cut" />
+    </div>
+  </div>
+
+  <h2>Audio Player</h2>
+
+  @if(paused) {
+     <button (click)="play()">Play</button>
+  } @else {
+    <button (click)="pause()">Pause</button>
+  }
 
 </div>

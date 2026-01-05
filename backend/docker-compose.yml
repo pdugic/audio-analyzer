@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  audio-iq-generator:
+    image: pdugic/audio-iq-generator
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.iq_generator
+    ports:
+      - "8000:8000"
+    environment:
+      - IQ_GENERATOR_PORT=8000
+      - IQ_GENERATOR_AUTO_START_STREAM=true
+    networks:
+      custom_bridge:
+        ipv4_address: 178.1.1.1
+
+  audio_filter_analyzer:
+    image: pdugic/audio-filter-analyzer
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.iq_filter_analyzer
+    ports:
+      - "8080:8080"
+    environment:
+      - IQ_GENERATOR_URL=http://audio-iq-generator:8000
+    depends_on:
+      - audio-iq-generator
+    networks:
+      custom_bridge:
+        ipv4_address: 178.1.1.2
+
+networks:
+  custom_bridge:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 178.1.1.0/24
+          gateway: 178.1.1.254

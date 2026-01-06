@@ -101,6 +101,12 @@ Below is a simple diagram showing how the pieces connect (also available as an S
     - Export an "active sessions" metric and use HPA (with custom metrics via Prometheus Adapter) or KEDA to scale replicas to match the number of active sessions. This scales the pool size, not necessarily 1:1 per tab.
 - Consider sticky routing, session affinity, and fast startup (pre-warmed pool) for UX.
 
+Below is a simple diagram showing how the pieces connect (also available as an SVG at `docs/goal_architecture.svg`):
+
+![Architecture diagram](docs/goal_architecture.svg)
+
+
+
 ## Implementation checklist ✅
 - [ ] Add Kubernetes manifests or Helm chart to `k8s/` (Deployments, Services, Ingress, ConfigMap, RBAC for Session Manager)
 - [ ] Add a `Session Manager` component (or document how a pool + HPA will be used)

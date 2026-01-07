@@ -11,8 +11,8 @@ import { AppConfigService } from './config.service';
 
 const AMPLITUDE_CHUNK_SIZE=100;
 const AMPLITUDE_CHUNKS_TO_SHOW=120;
-
-
+const FILTER_MIN_IN_HZ=20;
+const FILTER_MAX_IN_HZ=22000;
 
 @Component({
   selector: 'app-root',
@@ -47,11 +47,12 @@ export class AppComponent implements OnDestroy, AfterViewInit {
   };
 
   public spectrumData: ChartConfiguration['data'] = {
-    labels: [],
     datasets: [
       {
         label: 'Spectrum',
-        data: []
+        data: [],
+        yAxisID: 'y',
+        xAxisID: 'x'
       }
     ]
   };
@@ -63,7 +64,14 @@ export class AppComponent implements OnDestroy, AfterViewInit {
       point: { radius: 0 }, 
       line: { borderWidth: 1, fill: false, tension: 0.5}},
     scales: {
-        x: { min: 0, max: 22000, ticks: { stepSize: 1000 } },
+        x: { display: true,
+          min: 0,
+          max: FILTER_MAX_IN_HZ,
+          ticks: { stepSize: 2000 },
+          title: {
+            text: "Frequency"
+          } 
+        },
         y: { min: 0, max: 1 } 
     },
   };
@@ -75,8 +83,8 @@ export class AppComponent implements OnDestroy, AfterViewInit {
   @ViewChild('spectrumChart') spectrumChart?: BaseChartDirective;
 
   public paused = true;
-  public low_cut = 22000;
-  public high_cut = 20;
+  public low_cut = FILTER_MIN_IN_HZ;
+  public high_cut = FILTER_MAX_IN_HZ;
 
   private receivedSamples = new BehaviorSubject<number>(0);
   public receivedSamplesThrottled$: Observable<number> = this.receivedSamples.pipe(throttleTime(1000));
@@ -120,7 +128,7 @@ export class AppComponent implements OnDestroy, AfterViewInit {
       this.amplitudeChart?.update()
 
       if (msg.spectrum && this.spectrumData?.datasets?.[0]) {
-        this.spectrumData.labels = msg.spectrum.freqs.map((x: number) => x.toFixed(0));
+        this.spectrumData.labels = msg.spectrum.freqs;
         this.spectrumData.datasets[0].data = msg.spectrum.magnitude;
 
         this.spectrumMaxLongLast = Math.max(...msg.spectrum.magnitude);
@@ -197,26 +205,26 @@ export class AppComponent implements OnDestroy, AfterViewInit {
       });
   }
   
-  onHighCutChange(event: Event) {
+  onLowCutChange(event: Event) {
     const value = (event.target as HTMLInputElement).valueAsNumber;
-    if (value >= this.low_cut) {
-      this.high_cut = this.low_cut - 1;
-    } else if (value < 20) {
-      this.high_cut = 20;
+    if (value >= this.high_cut) {
+      this.low_cut = this.high_cut - 1;
+    } else if (value < FILTER_MIN_IN_HZ) {
+      this.low_cut = FILTER_MIN_IN_HZ;
     } else {
-      this.high_cut = value;
+      this.low_cut = value;
     }
     this.updateFilters();
   }
 
-  onLowCutChange(event: Event) {
+  onHighCutChange(event: Event) {
     const value = (event.target as HTMLInputElement).valueAsNumber;
-    if (value <= this.high_cut) {
-      this.low_cut = this.high_cut + 1;
+    if (value <= this.low_cut) {
+      this.high_cut = this.low_cut + 1;
     } else if (value > 22000) {
-      this.low_cut = 22000;
+      this.high_cut = 22000;
     } else {
-      this.low_cut = value;
+      this.high_cut = value;
     }
     this.updateFilters();
   }
@@ -240,28 +248,6 @@ export class AppComponent implements OnDestroy, AfterViewInit {
        },
       error: (e) => { console.error(e); }
     });
-  }
-
-  start_sender(): void {
-    fetch(`${this.appConfig.get<string>('apiGenUrl','http://localhost:8000')}/start`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then(async res => {
-        if (!res.ok) {
-          const txt = await res.text();
-          console.error('Failed to start sender', res.status, txt);
-        } else {
-          console.log('Started sender');
-        }
-      })
-      .catch(err => console.error('Error sending start request', err));
-  }
-
-  stop_sender(): void {
-    fetch(`${this.appConfig.get<string>('apiGenUrl','http://localhost:8000')}/stop`, { method: 'POST' })
-      .then(res => res.ok ? console.log('Stopped sender') : console.error('Failed to stop sender', res.status))
-      .catch(err => console.error('Error sending stop request', err));
   }
 
 }

@@ -39,12 +39,12 @@
   <h2>Frequency Filter</h2>
   <div style=" width: 100%;">
     <div style="margin-top: 15px; padding: 10px; background: #f5f5f5; border-radius: 4px;">
-      <label style="margin-right: 10px;">High Cut (Hz): </label>
-      <input type="number" min="20" max="20000" step="50"
-        (change)="onHighCutChange($event)" [(ngModel)]="high_cut" />
-      <label style="margin-right: 10px; margin-left: 10px;">Low Cut (Hz): </label>
-      <input type="number" min="20" max="20000" step="50"
+      <label style="margin-right: 10px;">Low Cut (Hz): </label>
+      <input type="number" min="20" max="22000" step="50"
         (change)="onLowCutChange($event)" [(ngModel)]="low_cut" />
+      <label style="margin-right: 10px; margin-left: 10px;">High Cut (Hz): </label>
+      <input type="number" min="20" max="22000" step="50"
+        (change)="onHighCutChange($event)" [(ngModel)]="high_cut" />
     </div>
   </div>
 

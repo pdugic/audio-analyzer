@@ -157,8 +157,8 @@ async def print_status_repeatedly():
 
 zi_low_i = zi_low_q = None
 zi_high_i = zi_high_q = None
-low_cut = 22000.0
-high_cut = 20.0
+low_cut = 20.0
+high_cut = 22000.0
 
 client_sio_connected = False
 
@@ -172,8 +172,8 @@ def get_filtered_i_component(iq_data: NDArray[np.complex64]) -> NDArray[np.float
     global low_cut, high_cut, fs
 
     # Design filters
-    sos_low = signal.butter(4, low_cut, 'lowpass', fs=fs, output='sos')
-    sos_high = signal.butter(4, high_cut, 'highpass', fs=fs, output='sos')
+    sos_low = signal.butter(4, high_cut, 'lowpass', fs=fs, output='sos')
+    sos_high = signal.butter(4, low_cut, 'highpass', fs=fs, output='sos')
 
     # Initialize filter states on the first chunk to ensure continuity
     if zi_low_i is None:
@@ -196,11 +196,6 @@ def get_filtered_i_component(iq_data: NDArray[np.complex64]) -> NDArray[np.float
     # filtered_samples = iq_data.real.astype(np.float32)
     return filtered_samples
 
-@app.get("/audio-stream")
-async def stream_file():
-    """Endpoint to stream a processed audio."""
-    return StreamingResponse(stream_manager.event_generator(), media_type="audio/wav")
-
 @app.post("/set-filter")
 async def set_filter(low_cut_in, high_cut_in):
     """Endpoint to set filter parameters."""
@@ -220,8 +215,8 @@ async def get_filter():
 async def reset_filter():
     """Endpoint to set filter parameters."""
     global low_cut, high_cut, zi_low_i
-    low_cut = float(22000)
-    high_cut = float(20)
+    low_cut = float(20)
+    high_cut = float(22000)
     zi_low_i = None  # Reset filter states
     return {"status": "filters reseted"}
 
@@ -244,11 +239,6 @@ async def connect_to_generator():
     print(f"{utc_now_iso()} Connected to IQ data generator server")
     global mode
     await data_generator.emit('set_mode', mode)
-
-@app.get("/audio-stream")
-async def stream_file():
-    """Endpoint to stream a processed audio."""
-    return StreamingResponse(stream_manager.event_generator(), media_type="audio/wav")
 
 @sio_server.event
 async def connect(sid, environ):

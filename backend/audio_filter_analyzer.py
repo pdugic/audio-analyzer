@@ -72,12 +72,11 @@ stream_manager = WavStreamManager()
 
 last_received_time = 0
 bytes_in_last_second = 0
-wav_data_buffer = 0
 
 # Processing constants/state
 fs = 44100.0
-DOWNSAMPLE_AMPLITUDE = 100
-BINS = 2206
+DOWNSAMPLE_AMPLITUDE = 20
+BINS = 512
 cumulative_samples = 0
 
 mode = "noise"
@@ -119,7 +118,7 @@ def calculate_amplitude_spectrum(filtered_iq_data):
 
 @data_generator.on('iq_data_segment')
 async def on_data_from_generator(data):
-    global last_received_time, bytes_in_last_second, last_received_segment_nr, wav_data_buffer
+    global last_received_time, bytes_in_last_second, last_received_segment_nr
 
     last_received_time = time.time()
     last_received_segment_nr = data[0]
@@ -132,14 +131,11 @@ async def on_data_from_generator(data):
     filtered = get_filtered_i_component(iq_data)
     audio_frame = calculate_amplitude_spectrum(filtered)
     
-    # Emit audio frame JSON to server (will be forwarded to clients)
-    global client_sio_connected
-    if client_sio_connected:
-        try:
-            await sio_server.emit('audio_frame', audio_frame)
-        except Exception:
-            # Don't let emit failures break streaming
-            pass
+    try:
+        await sio_server.emit('audio_frame', audio_frame)
+    except Exception:
+        # Don't let emit failures break streaming
+        pass
 
     # Prepare WAV bytes for streaming response
     wav_bytes = filtered.astype(np.int16).tobytes()
@@ -152,7 +148,7 @@ async def print_status_repeatedly():
         if time.time() - last_received_time > 5.2 or bytes_in_last_second == 0:
             print(f"{utc_now_iso()} Status: NO DATA incoming")
         else:
-            print(f"{utc_now_iso()} Status: DATA incoming ({bytes_in_last_second} bytes/sec), last segment: {last_received_segment_nr}, data analyzed: {wav_data_buffer} bytes")
+            print(f"{utc_now_iso()} Status: DATA incoming ({bytes_in_last_second} bytes/sec), last segment: {last_received_segment_nr}")
         bytes_in_last_second = 0
 
 zi_low_i = zi_low_q = None
@@ -245,12 +241,6 @@ async def connect(sid, environ):
     print(f"{utc_now_iso()} Client connected: {sid}")
 
 @sio_server.event
-async def start_stream(sid, data):
-    print(f"{utc_now_iso()} Start stream from {sid}: {data}")
-    global client_sio_connected
-    client_sio_connected = True
-
-@sio_server.event
 def disconnect(sid, reason):
     if reason == sio_server.reason.CLIENT_DISCONNECT:
         print(f"{utc_now_iso()} the client disconnected")
@@ -258,9 +248,6 @@ def disconnect(sid, reason):
         print(f"{utc_now_iso()} the server disconnected the client")
     else:
         print(f"{utc_now_iso()} disconnect reason: {reason}")
-    global client_sio_connected
-    client_sio_connected = False
-
 
 async def main(generator_url: str = 'http://localhost:8000'):
     print(f"{utc_now_iso()} Connecting to IQ data generator server at {generator_url}")

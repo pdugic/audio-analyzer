@@ -9,7 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { AudioPlayer } from './audio-player';
 import { AppConfigService } from './config.service';
 
-const AMPLITUDE_CHUNK_SIZE=100;
+const AMPLITUDE_CHUNK_SIZE=20;
 const AMPLITUDE_CHUNKS_TO_SHOW=120;
 const FILTER_MIN_IN_HZ=20;
 const FILTER_MAX_IN_HZ=22000;
@@ -229,7 +229,7 @@ export class AppComponent implements OnDestroy, AfterViewInit {
     this.updateFilters();
   }
 
-  set_generator(mode: string): void {
+  select_generator_source(mode: string): void {
     const url = `${this.appConfig.get<string>('apiUrl','http://localhost:8080')}/set-mode`;
     const params = { mode_in: String(mode) };
 
